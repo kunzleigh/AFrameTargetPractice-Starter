@@ -1,12 +1,12 @@
 var PoolHelper = require('../lib/poolhelper.js');
 
-// Global Key-value store for registered bullets
+// Global Key-value store for registered bullet types
 // Useful if you need to have different types of bullets
 // In our game, we only have one bullet (playerbullet)
 PEWVR.BULLETS = {};
 
 /**
- * Registers a bullet
+ * Registers a bullet type.
  * @param {string} name Name of the bullet being registered
  * @param {object} data Data associated with the player bullet
  * @param {object} definition Collection of methods that can be ran with this specific bullet being registered
@@ -32,7 +32,8 @@ AFRAME.registerSystem('bullet', {
      * Perform bullet system initialization
      */
     init: function () {
-        // TODO
+        this.poolHelper = new PoolHelper('bullet', PEWVR.BULLETS, this.sceneEl);
+        this.activeBullets = [];
     },
 
     /**
