@@ -2,6 +2,8 @@
 
 This project was created using A-Frame framework.
 
+This is the starter project that will be used during the workshop. For the completed project, please go to the following link: https://github.com/kunzleigh/AFrameTargetPractice
+
 ## Environment Setup
 
 * Download NodeJS
