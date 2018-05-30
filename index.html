@@ -11,27 +11,7 @@
     </head>
 
     <body>
-        <a-scene gamestate>
-            <a-assets>
-                <a-asset-item id="target" src="assets/models/target.json"></a-asset-item>
-                <a-asset-item id="playerbullet" src="assets/models/player-bullet.json"></a-asset-item>
-                <img id="skybox" src="assets/images/sky2.jpg">
-                <img id="fx1" src="assets/images/fx1.png">
-                <img id="fx2" src="assets/images/fx2.png">
-                <img id="fx3" src="assets/images/fx3.png">
-                <img id="fx4" src="assets/images/fx4.png">
-                <img id="fx5" src="assets/images/fx5.png">
-            </a-assets>
-
-            <a-sky src="#skybox" rotation="0 -130 0"></a-sky>
-            <a-entity id="player" camera wasd-controls look-controls gun="direction: 0 0 -1;">
-                <a-entity position="0 0 -1" geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03" material="color: blue; shader: flat">
-                </a-entity>
-            </a-entity>
-
-            <a-entity id="start_enemy" enemy="name: enemy_start;" collision-helper="radius: 0.65" json-model="src: url(assets/models/target.json);" position="0 1.2 -5" scale="0.05 0.05 0.05">
-            </a-entity>
-        </a-scene>
+        Hello World!
     </body>
 </html>
 
