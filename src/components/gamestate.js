@@ -30,7 +30,16 @@ AFRAME.registerComponent('gamestate', {
      */
 
     init: function () {
-        // TODO
+        // Instantiated state object based on the schema
+        var state = this.data;
+
+        // Reference to the HTML element
+        var el = this.el;
+
+        // Reference to the current object (so that we can access it in an anonymous function)
+        var self = this;
+
+        // TODO: Write code for handling 4 events
 
         // Register a handler for the event
         function registerHandler(event, handler) {
