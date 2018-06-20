@@ -1,4 +1,4 @@
-PEWVR.registerBullet(
+SP.registerBullet(
     // name
     'playerbullet',
     // data
