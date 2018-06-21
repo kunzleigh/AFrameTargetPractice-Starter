@@ -54,7 +54,47 @@ AFRAME.registerComponent('gun', {
         var translation = new THREE.Vector3();
 
         return function () {
-            // TODO
+            var bulletEntity;
+            var data = this.data;
+            var matrixWorld;
+            var self = this;
+
+            if (this.coolingDown) { 
+                return;
+            }
+
+            // Get firing entity's transformations.
+
+            // Make sure to get the latest child object's updated matrix world to account for
+            // Parent/child object's transformation changes
+            this.el.object3D.updateMatrixWorld();
+            matrixWorld = this.el.object3D.matrixWorld;
+            // Copy the gun's transformation matrix position
+            position.setFromMatrixPosition(matrixWorld);
+            // Decompose the current matrix into position, quaternion and scale components.
+            matrixWorld.decompose(translation, quaternion, scale);
+
+            // Set projectile direction.
+            direction.set(data.direction.x, data.direction.y, data.direction.z);
+            direction.applyQuaternion(quaternion);
+            direction.normalize();
+
+            // Ask system for bullet and set bullet position to starting point.
+            bulletEntity = this.el.sceneEl.systems.bullet.getBullet("playerbullet");
+            bulletEntity.setAttribute('position', position);
+            bulletEntity.setAttribute('bullet', {
+                direction: direction.clone(),
+                position: position.clone(),
+            });
+            bulletEntity.setAttribute('visible', true);
+            bulletEntity.setAttribute('position', position);
+            bulletEntity.play();
+
+            // Set cooldown period.
+            this.coolingDown = true;
+            setTimeout(function () {
+                self.coolingDown = false;
+            }, 100);
         };
     })()
 });
