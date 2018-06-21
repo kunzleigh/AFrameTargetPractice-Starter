@@ -71,9 +71,21 @@ AFRAME.registerComponent('bullet', {
             return;
         }
 
-        // Detect collision with the start game enemy
-        if (this.hasCollidedWithBullet(this.startEnemy, newBulletPosition)) {
-            this.hitObject(this.startEnemy);
+        var state = this.el.sceneEl.getAttribute('gamestate').state;
+        if (state === 'STATE_INIT') {
+            // Detect collision with the start game enemy
+            if (this.hasCollidedWithBullet(this.startEnemy, newBulletPosition)) {
+                this.hitObject(this.startEnemy);
+            }
+        } else {
+            // Detect collisions with all the active enemies
+            var enemies = this.el.sceneEl.systems.enemy.activeEnemies;
+            for (var i = 0; i < enemies.length; i++) {
+                if (this.hasCollidedWithBullet(enemies[i], newBulletPosition)) {
+                    this.hitObject(enemies[i]);
+                    return;
+                }
+            }
         }
     },
 
@@ -105,6 +117,7 @@ AFRAME.registerComponent('bullet', {
      */
     hitObject: function (enemyEntity) {
         this.resetBullet()
+        enemyEntity.components.enemy.collided();
     },
 
     /**
