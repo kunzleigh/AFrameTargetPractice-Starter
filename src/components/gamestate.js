@@ -16,30 +16,58 @@ AFRAME.registerComponent('gamestate', {
         waveSequence: { default: 0 }
     },
 
-
-    /**
-     * Lifecycle hook invoked on initialization of the component
-     * 
-     * Perform the following tasks:
-     * 
-     * Handle various events emitted from other systems (enemy system for example)
-     *  start-game: Set the current state to STATE_PLAYING
-     *  enemy-spawn: Increment the number of enemies available in current scene
-     *  wave-created: Record # of sequences available in the current wave
-     *  enemy-death: Check if we need to advance in our wave or wave sequence. Also check if we need to end the game.
-     */
-
     init: function () {
+        // Reference to the current object (so that we can access it in anonymous function)
+        var self = this;
+        // Reference to the element
+        var el = this.el;
         // Instantiated state object based on the schema
         var state = this.data;
 
-        // Reference to the HTML element
-        var el = this.el;
+        // Handle various events emitted from enemy system
 
-        // Reference to the current object (so that we can access it in an anonymous function)
-        var self = this;
+        // Transition into start game state when the starting enemy has been destroyed
+        registerHandler('start-game', function (newState) {
+            newState.state = 'STATE_PLAYING';
+            return newState;
+        });
 
-        // TODO: Write code for handling 4 events
+        // Increase the number of enemies available in the scene when a new enemy has been spawned
+        registerHandler('enemy-spawn', function (newState) {
+            newState.numEnemies++;
+            return newState;
+        });
+
+        // Record the number of wave sequences available when a new wave starts
+        registerHandler('wave-created', function (newState, params) {
+            var wave = params.detail.wave;
+            newState.numSequences = wave.sequences.length;
+            newState.waveSequence = 0;
+            return newState;
+        });
+
+        // Check for advancing to next wave/wave sequence or ending the game when an enemy has been killed
+        registerHandler('enemy-death', function (newState) {
+            newState.points++;
+            if (newState.points >= self.data.numEnemiesToWin) {
+                newState.state = 'STATE_GAME_WIN';
+            }
+
+            newState.numEnemies--;
+            // All enemies killed, advance wave.
+            if (newState.numEnemies === 0) {
+                newState.numSequences--;
+                newState.waveSequence++;
+                if (newState.numSequences === 0) {
+                    newState.waveSequence = 0;
+                    newState.wave++;
+                    if (newState.wave >= WAVES.length) {
+                        newState.state = 'STATE_GAME_WIN';
+                    }
+                }
+            }
+            return newState;
+        });
 
         // Register a handler for the event
         function registerHandler(event, handler) {
