@@ -20,46 +20,41 @@ SP.registerExplosion = function (name, data, definition) {
 };
 
 AFRAME.registerSystem('explosion', {
-    schema: {
-        wave: { default: 0 }
-    },
-
+    /**
+     * Perform enemy system initialization
+     */
     init: function () {
-        this.poolHelper = new PoolHelper('explosion', SP.EXPLOSIONS, this.sceneEl);
-        this.activeExplosions = [];
+        // TODO
     },
 
+    /**
+     * Resets the Explosion System.
+     * 
+     * Returns all of the active explosions back into the object pool
+     */
     reset: function (entity) {
-        var self = this;
-        this.activeExplosions.forEach(function (entity) {
-            self.returnToPool(entity.getAttribute('explosion').name, entity);
-        });
+        // TODO
     },
 
+    /**
+     * Returns a single active explosion into the pool
+     */
     returnToPool: function (name, entity) {
-        this.activeExplosions.splice(this.activeExplosions.indexOf(entity), 1);
-        this.poolHelper.returnEntity(name, entity);
+        // TODO
     },
 
+    /**
+     * Retrieve an explosion entity from the pool
+     */
     getFromPool: function (name) {
-        var entity = this.poolHelper.requestEntity(name);
-        this.activeExplosions.push(entity);
-        return entity;
+        // TODO
     },
 
+    /**
+     * Create an explosion in the scene
+     */
     createExplosion: function (type, position, color, scale, direction, enemyName) {
-        var explosionEntity = this.getFromPool(type);
-        explosionEntity.setAttribute('position', position || this.el.getAttribute('position'));
-        explosionEntity.setAttribute('explosion', {
-            type: type,
-            lookAt: direction.clone(),
-            color: color || '#FFF',
-            scale: scale || 1.0
-        });
-
-        explosionEntity.setAttribute('visible', true);
-
-        explosionEntity.play();
+        // TODO
     }
 });
 
@@ -72,58 +67,6 @@ SP.registerExplosion(
         components: {
             explosion: {
                 type: 'enemy',
-            },
-        },
-        poolSize: 10
-    },
-    // implementation
-    {
-    }
-);
-
-SP.registerExplosion(
-    // name
-    'enemygun',
-    // data
-    {
-        components: {
-            explosion: {
-                type: 'enemygun',
-            },
-        },
-        poolSize: 10
-    },
-    // implementation
-    {
-    }
-);
-
-
-SP.registerExplosion(
-    // name
-    'bullet',
-    // data
-    {
-        components: {
-            explosion: {
-                type: 'bullet',
-            },
-        },
-        poolSize: 10
-    },
-    // implementation
-    {
-    }
-);
-
-SP.registerExplosion(
-    // name
-    'background',
-    // data
-    {
-        components: {
-            explosion: {
-                type: 'background',
             },
         },
         poolSize: 10
