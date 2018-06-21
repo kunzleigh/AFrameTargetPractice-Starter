@@ -1,6 +1,6 @@
 var PoolHelper = require('../lib/poolhelper.js');
 
-// Global Key-value store for registered bullet types
+// Global Key-value store for registered bullets
 // Useful if you need to have different types of bullets
 // In our game, we only have one bullet (playerbullet)
 SP.BULLETS = {};
@@ -42,7 +42,9 @@ AFRAME.registerSystem('bullet', {
      * @param name Bullet name to request
      */
     getBullet: function (name) {
-        // TODO
+        var bullet = this.poolHelper.requestEntity(name);
+        this.activeBullets.push(bullet);
+        return bullet;
     },
 
     /**
@@ -52,7 +54,8 @@ AFRAME.registerSystem('bullet', {
      * @param entity Entity to return
      */
     returnBullet: function (name, entity) {
-        // TODO
+        this.activeBullets.splice(this.activeBullets.indexOf(entity), 1);
+        this.poolHelper.returnEntity(name, entity);
     },
 
     /**
@@ -61,6 +64,9 @@ AFRAME.registerSystem('bullet', {
      * Returns all of the active bullets in the scene back to the object pool
      */
     reset: function () {
-        // TODO
+        var self = this;
+        this.activeBullets.forEach(function (bullet) {
+            self.returnBullet(bullet.getAttribute('bullet').name, bullet);
+        });
     },
 });

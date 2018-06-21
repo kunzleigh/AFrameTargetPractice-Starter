@@ -11,51 +11,74 @@ AFRAME.registerComponent('bullet', {
 
     /**
      * Lifecycle hook invoked on initialization of the component
-     * 
-     * Perform the following tasks:
-     * 
-     * Get a reference of the starting enemy
-     * Get a reference of the registered bullet
-     * Call the initialization method on the registered bullet
-     * Initialize empty vectors (current bullet's direction, temporary direction/position vectors for moving the bullet)
      */
     init: function () {
-        // TODO
+        // Reference to the starting enemy
+        this.startEnemy = document.getElementById('start_enemy');
+        // Get the registered bullet from our pool
+        // This should've already been created in our gun component
+        this.bullet = SP.BULLETS[this.data.name];
+        // Call the initialization function on the registered bullet (setting scale, material, etc.)
+        // See player.js for how bullet registration is done
+        this.bullet.definition.init.call(this);
+        // Empty 3d vector for the current bullet's direction
+        this.direction = new THREE.Vector3();
+        // Temporary object we will work with to store and modify direction/position properties of our bullet
+        this.temps = {
+            direction: new THREE.Vector3(),
+            position: new THREE.Vector3()
+        }
     },
 
     /**
      * Lifecycle hook invoked whenever a property of the bullet object has been updated
-     * 
-     * Perform the following tasks:
-     * 
-     * Update the current bullet's direction, acceleration, speed and starting position based on the updated properties
-     * 
      * @param: oldData: Reference to the old bullet data (unused here)
      */
     update: function (oldData) {
-        // TODO
+        // Update the acceleration/speed/starting position of the bullet entity
+        var newData = this.data;
+        this.direction.set(newData.direction.x, newData.direction.y, newData.direction.z);
+        this.currentAcceleration = newData.acceleration;
+        this.speed = newData.initialSpeed;
+        this.startPosition = newData.position;
     },
 
     /**
-     * Lifecycle hook invoked called on each rendering of the frame
-     * 
-     * Perform the following tasks:
-     * 
-     * Align the bullet 3d object's direction
-     * Calculate new speed
-     * Set bullet's position based on new speed
-     * Reset bullet if it's lost in the sky
-     * Check & handle collision - against starting enemy and active enemies
-     * 
+     * Lifecycle hook invoked on each rendering of the frame
      * @param time: Current timestamp in milliseconds (unused here)
      * @param delta: Time difference since the last frame's rendering in millliseconds
      */
     tick: function tick(time, delta) {
-        // TODO
+        // Align the bullet to its direction
+        this.el.object3D.lookAt(this.direction.clone());
+
+        // Update speed based on acceleration
+        this.speed = this.currentAcceleration * .1 * delta;
+        // Cap the speed
+        if (this.speed > this.data.maxSpeed) { 
+            this.speed = this.data.maxSpeed; 
+        }
+
+        // Set new bullet position
+        this.temps.position.copy(this.el.getAttribute('position'));
+        this.temps.direction.copy(this.direction);
+        var newBulletPosition = this.temps.position.add(this.temps.direction.multiplyScalar(this.speed));
+        this.el.setAttribute('position', newBulletPosition);
+
+        // Check if the bullet is lost in the sky
+        if (this.temps.position.length() >= 25) {
+            this.resetBullet();
+            return;
+        }
+
+        // Detect collision with the start game enemy
+        if (this.hasCollidedWithBullet(this.startEnemy, newBulletPosition)) {
+            this.hitObject(this.startEnemy);
+        }
     },
 
     /**
-     * method to perform a collision check on the bullet against an enemy.
+     * Performs a collision check on the bullet against an enemy.
      * If the bullet is within the enemy radius + bulletRadius, the bullet has
      * collided with the enemy.
      * 
@@ -64,7 +87,15 @@ AFRAME.registerComponent('bullet', {
      * @returns True if collision occured, false otherwise
      */
     hasCollidedWithBullet: function (enemy, bulletPosition) {
-        // TODO
+        var bulletCollisionHelper = this.el.getAttribute('collision-helper');
+        var bulletRadius = bulletCollisionHelper.radius;
+
+        var enemyCollisionHelper = enemy.getAttribute('collision-helper');
+        var enemyRadius = enemyCollisionHelper.radius;
+
+        if (bulletPosition.distanceTo(enemy.object3D.position) < enemyRadius + bulletRadius) {
+            return true;
+        }
         return false;
     },
 
@@ -73,13 +104,16 @@ AFRAME.registerComponent('bullet', {
      * @param enemyEntity Enemy Entity
      */
     hitObject: function (enemyEntity) {
-        // TODO
+        this.resetBullet()
     },
 
     /**
      * Resets the bullet's properties and returns the bullet to the pool
      */
     resetBullet: function () {
-        // TODO
+        this.speed = this.data.initialSpeed;
+
+        // You can reference the system directly if the component's name is the same as the entity's name
+        this.system.returnBullet(this.data.name, this.el);
     },
 });

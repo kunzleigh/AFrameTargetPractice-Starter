@@ -19,7 +19,30 @@ AFRAME.registerComponent('gun', {
      * 
      */
     init: function () {
-        // TODO
+        // Instantiated gun object based on the schema
+        var data = this.data;
+        // Reference to the current object (so that we can access it in anonymous function)
+        var self = this;
+
+        this.mobileVRControls = new MobileVRControls();
+        this.coolingDown = false;  // Limit fire rate.
+
+        // Add keyboard listener.
+        window.addEventListener('keydown', function (evt) {
+            if (evt.code === 'Space' || evt.keyCode === '32') { 
+                self.shoot();
+            }
+        });
+
+        // Add two separate listeners for mobile - window click and VR click
+        if (AFRAME.utils.device.isMobile()) {
+            window.addEventListener('click', function (evt) {
+                self.shoot();
+            });
+            this.mobileVRControls.addVRClickListener(function () {
+                self.shoot();
+            });
+        }
     },
 
     shoot: (function () {

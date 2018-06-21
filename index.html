@@ -23,12 +23,12 @@
             </a-assets>
 
             <a-sky src="#skybox" rotation="0 -130 0"></a-sky>
-            <a-entity id="player" camera wasd-controls look-controls>
+            <a-entity id="player" camera wasd-controls look-controls gun="direction: 0 0 -1;">
                 <a-entity position="0 0 -1" geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03" material="color: blue; shader: flat">
                 </a-entity>
             </a-entity>
 
-            <a-entity id="start_enemy" json-model="src: url(assets/models/target.json);" position="0 1.2 -5" scale="0.05 0.05 0.05">
+            <a-entity id="start_enemy" json-model="src: url(assets/models/target.json);" collision-helper="radius: 0.65" position="0 1.2 -5" scale="0.05 0.05 0.05">
             </a-entity>
         </a-scene>
     </body>
