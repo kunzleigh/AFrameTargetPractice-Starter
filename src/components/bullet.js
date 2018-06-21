@@ -118,6 +118,10 @@ AFRAME.registerComponent('bullet', {
     hitObject: function (enemyEntity) {
         this.resetBullet()
         enemyEntity.components.enemy.collided();
+        // Create an explosion based on where the enemy is (DO THIS DURING EXPLOSION)
+        var enemyData = enemyEntity.getAttribute('enemy')
+        this.el.sceneEl.systems.explosion.createExplosion('enemy', enemyEntity.object3D.position, enemyData.color, enemyData.scale, this.direction, enemyData.name);
+        // Call collided method on the enemy component and let it handle its collision properly
     },
 
     /**

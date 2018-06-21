@@ -20,41 +20,42 @@ SP.registerExplosion = function (name, data, definition) {
 };
 
 AFRAME.registerSystem('explosion', {
-    /**
-     * Perform enemy system initialization
-     */
     init: function () {
-        // TODO
+        this.poolHelper = new PoolHelper('explosion', SP.EXPLOSIONS, this.sceneEl);
+        this.activeExplosions = [];
     },
 
-    /**
-     * Resets the Explosion System.
-     * 
-     * Returns all of the active explosions back into the object pool
-     */
     reset: function (entity) {
-        // TODO
+        var self = this;
+        this.activeExplosions.forEach(function (entity) {
+            self.returnToPool(entity.getAttribute('explosion').name, entity);
+        });
     },
 
-    /**
-     * Returns a single active explosion into the pool
-     */
     returnToPool: function (name, entity) {
-        // TODO
+        this.activeExplosions.splice(this.activeExplosions.indexOf(entity), 1);
+        this.poolHelper.returnEntity(name, entity);
     },
 
-    /**
-     * Retrieve an explosion entity from the pool
-     */
     getFromPool: function (name) {
-        // TODO
+        var entity = this.poolHelper.requestEntity(name);
+        this.activeExplosions.push(entity);
+        return entity;
     },
 
-    /**
-     * Create an explosion in the scene
-     */
     createExplosion: function (type, position, color, scale, direction, enemyName) {
-        // TODO
+        var explosionEntity = this.getFromPool(type);
+        explosionEntity.setAttribute('position', position || this.el.getAttribute('position'));
+        explosionEntity.setAttribute('explosion', {
+            type: type,
+            lookAt: direction.clone(),
+            color: color || '#FFF',
+            scale: scale || 1.0
+        });
+
+        explosionEntity.setAttribute('visible', true);
+
+        explosionEntity.play();
     }
 });
 
